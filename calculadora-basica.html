@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Básica</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .calculator-container {
+            max-width: 320px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .calculator-display {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: right;
+            font-size: 1.2rem;
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .calculator-history {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            margin-bottom: 0.3rem;
+        }
+
+        .calculator-result {
+            font-size: 1.4rem;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .calculator-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .calc-button {
+            padding: 0.7rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            color: #2c3e50;
+        }
+
+        .calc-button:hover {
+            background: #e9ecef;
+        }
+
+        .calc-button.operator {
+            background: #3498db;
+            color: white;
+        }
+
+        .calc-button.operator:hover {
+            background: #2980b9;
+        }
+
+        .calc-button.equals {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .calc-button.equals:hover {
+            background: #27ae60;
+        }
+
+        .calc-button.clear {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .calc-button.clear:hover {
+            background: #c0392b;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-bottom: 0.8rem;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .back-button:hover {
+            color: #2980b9;
+        }
+
+        .memory-functions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .memory-button {
+            padding: 0.6rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            color: #2c3e50;
+        }
+
+        .memory-button:hover {
+            background: #e9ecef;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container calculator-container">
+        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.8rem;">
+            <a href="index.html" class="back-button">← Voltar</a>
+            <button id="btnManual" style="background: #3498db; color: #fff; border: none; border-radius: 6px; padding: 0.4rem 1rem; cursor: pointer;
+                font-size: 0.95rem;">Manual</button>
+        </div>
+        <h1>Calculadora</h1>
+
+        <div class="calculator-display">
+            <div class="calculator-history" id="history"></div>
+            <div class="calculator-result" id="display">0</div>
+        </div>
+
+        <div class="memory-functions">
+            <button class="memory-button" onclick="memoryClear()">MC</button>
+            <button class="memory-button" onclick="memoryRecall()">MR</button>
+            <button class="memory-button" onclick="memoryAdd()">M+</button>
+            <button class="memory-button" onclick="memorySubtract()">M-</button>
+        </div>
+
+        <div class="calculator-buttons">
+            <button class="calc-button clear" onclick="clearDisplay()">C</button>
+            <button class="calc-button" onclick="appendToDisplay('(')">(</button>
+            <button class="calc-button" onclick="appendToDisplay(')')">)</button>
+            <button class="calc-button operator" onclick="appendToDisplay('/')">/</button>
+
+            <button class="calc-button" onclick="appendToDisplay('7')">7</button>
+            <button class="calc-button" onclick="appendToDisplay('8')">8</button>
+            <button class="calc-button" onclick="appendToDisplay('9')">9</button>
+            <button class="calc-button operator" onclick="appendToDisplay('*')">×</button>
+
+            <button class="calc-button" onclick="appendToDisplay('4')">4</button>
+            <button class="calc-button" onclick="appendToDisplay('5')">5</button>
+            <button class="calc-button" onclick="appendToDisplay('6')">6</button>
+            <button class="calc-button operator" onclick="appendToDisplay('-')">-</button>
+
+            <button class="calc-button" onclick="appendToDisplay('1')">1</button>
+            <button class="calc-button" onclick="appendToDisplay('2')">2</button>
+            <button class="calc-button" onclick="appendToDisplay('3')">3</button>
+            <button class="calc-button operator" onclick="appendToDisplay('+')">+</button>
+
+            <button class="calc-button" onclick="appendToDisplay('0')">0</button>
+            <button class="calc-button" onclick="appendToDisplay('.')">.</button>
+            <button class="calc-button" onclick="backspace()">⌫</button>
+            <button class="calc-button equals" onclick="calculate()">=</button>
+        </div>
+    </div>
+
+    <!-- Modal do Manual -->
+    <div id="modalManual"
+        style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(44,62,80,0.7); z-index:1000; justify-content:center; align-items:center;">
+        <div
+            style="background:#fff; color:#222; border-radius:10px; max-width:350px; padding:2rem 1.5rem; box-shadow:0 2px 16px rgba(44,62,80,0.18); position:relative;">
+            <button onclick="document.getElementById('modalManual').style.display='none'"
+                style="position:absolute; top:10px; right:15px; background:none; border:none; font-size:1.3rem; color:#888; cursor:pointer;">&times;</button>
+            <h2 style="margin-top:0; font-size:1.2rem; color:#3498db;">Manual da Calculadora Básica</h2>
+            <ul style="font-size:1rem; padding-left:1.1em;">
+                <li>Digite números e operadores (+, -, ×, ÷) usando os botões ou o teclado.</li>
+                <li>Use os parênteses para operações agrupadas.</li>
+                <li>Clique em <b>=</b> para ver o resultado.</li>
+                <li>O botão <b>C</b> limpa tudo.</li>
+                <li>O botão <b>⌫</b> apaga o último caractere.</li>
+                <li>Os botões <b>MC</b>, <b>MR</b>, <b>M+</b> e <b>M-</b> são funções de memória:</li>
+                <ul>
+                    <li><b>MC</b>: Limpa a memória</li>
+                    <li><b>MR</b>: Recupera o valor da memória</li>
+                    <li><b>M+</b>: Soma o valor atual à memória</li>
+                    <li><b>M-</b>: Subtrai o valor atual da memória</li>
+                </ul>
+                <li>Você pode usar o teclado para digitar números e operadores.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let display = '0';
+        let history = '';
+        let memory = 0;
+
+        function updateDisplay() {
+            document.getElementById('display').textContent = display;
+            document.getElementById('history').textContent = history;
+        }
+
+        function appendToDisplay(value) {
+            // Limite de 12 caracteres
+            if (display.length >= 12 && display !== '0') {
+                return;
+            }
+            if (display === '0' && value !== '.') {
+                display = value;
+            } else {
+                display += value;
+            }
+            updateDisplay();
+        }
+
+        function clearDisplay() {
+            display = '0';
+            history = '';
+            updateDisplay();
+        }
+
+        function backspace() {
+            if (display.length > 1) {
+                display = display.slice(0, -1);
+            } else {
+                display = '0';
+            }
+            updateDisplay();
+        }
+
+        function calculate() {
+            try {
+                history = display + ' =';
+                display = eval(display).toString();
+                updateDisplay();
+            } catch (error) {
+                display = 'Erro';
+                updateDisplay();
+            }
+        }
+
+        function memoryClear() {
+            memory = 0;
+        }
+
+        function memoryRecall() {
+            display = memory.toString();
+            updateDisplay();
+        }
+
+        function memoryAdd() {
+            try {
+                memory += parseFloat(eval(display));
+            } catch (error) {
+                display = 'Erro';
+                updateDisplay();
+            }
+        }
+
+        function memorySubtract() {
+            try {
+                memory -= parseFloat(eval(display));
+            } catch (error) {
+                display = 'Erro';
+                updateDisplay();
+            }
+        }
+
+        document.addEventListener('keydown', function (event) {
+            const key = event.key;
+            if (/[0-9]/.test(key)) {
+                appendToDisplay(key);
+            } else if (['+', '-', '*', '/', '.'].includes(key)) {
+                appendToDisplay(key);
+            } else if (key === 'Enter') {
+                calculate();
+            } else if (key === 'Backspace') {
+                backspace();
+            } else if (key === 'Escape') {
+                clearDisplay();
+            }
+        });
+
+        document.getElementById('btnManual').onclick = function () {
+            document.getElementById('modalManual').style.display = 'flex';
+        };
+    </script>
+</body>
+
+</html>
