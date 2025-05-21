@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Energia Elétrica</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: #f4f6fa;
+        }
+
+        .container {
+            background: #254055;
+            border-radius: 12px;
+            padding: 2rem 1.5rem;
+            box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+            max-width: 700px;
+            margin: 2rem auto;
+        }
+
+        .calculator-section {
+            background: #2e4a5e;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        h1,
+        h2 {
+            color: #fff;
+        }
+
+        .subtitle,
+        label,
+        .back-button {
+            color: #c9d6e3;
+        }
+
+        .input-group input {
+            background: #22384a;
+            color: #fff;
+            border: 1px solid #1a2a38;
+        }
+
+        .input-group input::placeholder {
+            color: #fff;
+            opacity: 1;
+        }
+
+        .btn {
+            width: 100%;
+            background: #07c383;
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.25rem;
+            border: none;
+            border-radius: 8px;
+            padding: 1rem 0;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            box-shadow: none;
+            text-align: center;
+        }
+
+        .btn:hover,
+        .btn:focus {
+            background: #05a96b;
+        }
+
+        .result {
+            background: #22384a;
+            color: #fff;
+        }
+
+        .result,
+        .result *,
+        .item-list,
+        .item-list * {
+            background: #22384a !important;
+            color: #fff !important;
+        }
+
+        .input-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #090909;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #e8f4f8;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .aparelho-list {
+            margin-top: 1rem;
+        }
+
+        .aparelho-item {
+            background: #fff;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(44, 62, 80, 0.06);
+            padding: 0.7rem 1rem;
+            margin-bottom: 0.7rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .aparelho-item span {
+            color: #2c3e50;
+        }
+
+        .remove-btn {
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 0.3rem 0.7rem;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .remove-btn:hover {
+            background: #c0392b;
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff !important;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 2rem;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin: 1rem 0 0.5rem 0;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .back-button:hover {
+            color: #217dbb;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="back-button">← Voltar</a>
+        <h1>Calculadora de Energia Elétrica</h1>
+        <p class="subtitle">Descubra o consumo e o custo de energia dos seus aparelhos</p>
+        <div class="calculator-section">
+            <div class="input-group">
+                <label for="nome-aparelho">Nome do aparelho:</label>
+                <input type="text" id="nome-aparelho" placeholder="Ex: Geladeira">
+            </div>
+            <div class="input-group">
+                <label for="potencia">Potência (Watts):</label>
+                <input type="number" id="potencia" placeholder="Ex: 150">
+            </div>
+            <div class="input-group">
+                <label for="horas">Horas de uso por dia:</label>
+                <input type="number" id="horas" placeholder="Ex: 8">
+            </div>
+            <div class="input-group">
+                <label for="dias">Dias de uso no mês:</label>
+                <input type="number" id="dias" placeholder="Ex: 30">
+            </div>
+            <button class="btn" onclick="adicionarAparelho()">Adicionar Aparelho</button>
+            <div class="aparelho-list" id="lista-aparelhos"></div>
+            <div class="input-group">
+                <label for="valor-kwh">Valor do kWh (R$):</label>
+                <input type="number" id="valor-kwh" placeholder="Ex: 0.90" value="0.90" step="0.01">
+            </div>
+            <button class="btn" onclick="calcularEnergia()">Calcular Consumo Total</button>
+            <div id="resultado-energia" class="result"></div>
+        </div>
+    </div>
+    <script>
+        let aparelhos = [];
+        function adicionarAparelho() {
+            const nome = document.getElementById('nome-aparelho').value.trim() || 'Aparelho';
+            const potencia = parseFloat(document.getElementById('potencia').value) || 0;
+            const horas = parseFloat(document.getElementById('horas').value) || 0;
+            const dias = parseFloat(document.getElementById('dias').value) || 0;
+            if (potencia <= 0 || horas <= 0 || dias <= 0) {
+                alert('Preencha todos os campos do aparelho corretamente.');
+                return;
+            }
+            aparelhos.push({ nome, potencia, horas, dias });
+            atualizarListaAparelhos();
+            document.getElementById('nome-aparelho').value = '';
+            document.getElementById('potencia').value = '';
+            document.getElementById('horas').value = '';
+            document.getElementById('dias').value = '';
+        }
+        function atualizarListaAparelhos() {
+            const lista = document.getElementById('lista-aparelhos');
+            lista.innerHTML = '';
+            aparelhos.forEach((ap, idx) => {
+                lista.innerHTML += `<div class='aparelho-item'><span>${ap.nome} (${ap.potencia}W, ${ap.horas}h/dia, ${ap.dias} dias)</span><button class='remove-btn' onclick='removerAparelho(${idx})'>Remover</button></div>`;
+            });
+        }
+        function removerAparelho(idx) {
+            aparelhos.splice(idx, 1);
+            atualizarListaAparelhos();
+        }
+        function calcularEnergia() {
+            const valorKwh = parseFloat(document.getElementById('valor-kwh').value) || 0.9;
+            if (aparelhos.length === 0) {
+                document.getElementById('resultado-energia').innerHTML = '<p>Adicione pelo menos um aparelho.</p>';
+                document.getElementById('resultado-energia').classList.add('show');
+                return;
+            }
+            let consumoTotal = 0;
+            let custoTotal = 0;
+            let detalhes = '<ul>';
+            aparelhos.forEach(ap => {
+                const consumo = (ap.potencia * ap.horas * ap.dias) / 1000; // kWh
+                const custo = consumo * valorKwh;
+                consumoTotal += consumo;
+                custoTotal += custo;
+                detalhes += `<li>${ap.nome}: <strong>${consumo.toFixed(2)} kWh</strong> - R$ ${custo.toFixed(2)}</li>`;
+            });
+            detalhes += '</ul>';
+            const resultado = `<p><strong>Consumo total:</strong> ${consumoTotal.toFixed(2)} kWh</p><p><strong>Custo total:</strong> R$ ${custoTotal.toFixed(2)}</p>${detalhes}`;
+            document.getElementById('resultado-energia').innerHTML = resultado;
+            document.getElementById('resultado-energia').classList.add('show');
+        }
+    </script>
+</body>
+
+</html>
