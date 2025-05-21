@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora HP</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .calculator-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1rem;
+            background: #2c3e50;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .display-section {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .buttons-section {
+            flex: 2;
+        }
+
+        .calculator-display {
+            background: #34495e;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: right;
+            font-family: 'Courier New', monospace;
+            color: #2ecc71;
+        }
+
+        .stack-display {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .stack-line {
+            font-size: 1rem;
+            color: #95a5a6;
+            min-height: 1.2rem;
+        }
+
+        .stack-line.active {
+            color: #2ecc71;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .calculator-buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .calc-button {
+            padding: 0.8rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+
+        .calc-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .calc-button.number {
+            background: #34495e;
+            color: #ecf0f1;
+        }
+
+        .calc-button.number:hover {
+            background: #2c3e50;
+        }
+
+        .calc-button.operator {
+            background: #e67e22;
+            color: white;
+        }
+
+        .calc-button.operator:hover {
+            background: #d35400;
+        }
+
+        .calc-button.function {
+            background: #3498db;
+            color: white;
+        }
+
+        .calc-button.function:hover {
+            background: #2980b9;
+        }
+
+        .calc-button.enter {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .calc-button.enter:hover {
+            background: #27ae60;
+        }
+
+        .calc-button.clear {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .calc-button.clear:hover {
+            background: #c0392b;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-bottom: 0.8rem;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .back-button:hover {
+            color: #2980b9;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #ecf0f1;
+            text-align: center;
+        }
+
+        .mode-switch {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .mode-button {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            background: #34495e;
+            color: #ecf0f1;
+            flex: 1;
+        }
+
+        .mode-button.active {
+            background: #3498db;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container calculator-container">
+        <div class="display-section">
+            <a href="index.html" class="back-button">← Voltar</a>
+            <h1>HP Scientific</h1>
+
+            <div class="mode-switch">
+                <button class="mode-button active" onclick="switchMode('deg')">DEG</button>
+                <button class="mode-button" onclick="switchMode('rad')">RAD</button>
+                <button class="mode-button" onclick="switchMode('grad')">GRAD</button>
+            </div>
+
+            <div class="calculator-display">
+                <div class="stack-display">
+                    <div class="stack-line" id="stack3">0</div>
+                    <div class="stack-line" id="stack2">0</div>
+                    <div class="stack-line" id="stack1">0</div>
+                    <div class="stack-line active" id="stack0">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="buttons-section">
+            <div class="calculator-buttons">
+                <!-- Primeira linha -->
+                <button class="calc-button function" onclick="calculateFunction('sin')">SIN</button>
+                <button class="calc-button function" onclick="calculateFunction('cos')">COS</button>
+                <button class="calc-button function" onclick="calculateFunction('tan')">TAN</button>
+                <button class="calc-button function" onclick="calculateFunction('log')">LOG</button>
+                <button class="calc-button function" onclick="calculateFunction('ln')">LN</button>
+
+                <!-- Segunda linha -->
+                <button class="calc-button function" onclick="calculateFunction('asin')">ASIN</button>
+                <button class="calc-button function" onclick="calculateFunction('acos')">ACOS</button>
+                <button class="calc-button function" onclick="calculateFunction('atan')">ATAN</button>
+                <button class="calc-button function" onclick="calculateFunction('sqrt')">√</button>
+                <button class="calc-button function" onclick="calculateFunction('pow')">Yˣ</button>
+
+                <!-- Terceira linha -->
+                <button class="calc-button function" onclick="calculateFunction('pi')">π</button>
+                <button class="calc-button function" onclick="calculateFunction('e')">e</button>
+                <button class="calc-button clear" onclick="clearStack()">CLR</button>
+                <button class="calc-button function" onclick="swapStack()">SWAP</button>
+                <button class="calc-button function" onclick="rollStack()">ROLL</button>
+
+                <!-- Quarta linha -->
+                <button class="calc-button function" onclick="dropStack()">DROP</button>
+                <button class="calc-button number" onclick="appendToDisplay('7')">7</button>
+                <button class="calc-button number" onclick="appendToDisplay('8')">8</button>
+                <button class="calc-button number" onclick="appendToDisplay('9')">9</button>
+                <button class="calc-button operator" onclick="divide()">÷</button>
+
+                <!-- Quinta linha -->
+                <button class="calc-button number" onclick="appendToDisplay('4')">4</button>
+                <button class="calc-button number" onclick="appendToDisplay('5')">5</button>
+                <button class="calc-button number" onclick="appendToDisplay('6')">6</button>
+                <button class="calc-button operator" onclick="multiply()">×</button>
+                <button class="calc-button enter" onclick="enter()">ENTER</button>
+
+                <!-- Sexta linha -->
+                <button class="calc-button number" onclick="appendToDisplay('1')">1</button>
+                <button class="calc-button number" onclick="appendToDisplay('2')">2</button>
+                <button class="calc-button number" onclick="appendToDisplay('3')">3</button>
+                <button class="calc-button operator" onclick="subtract()">-</button>
+                <button class="calc-button operator" onclick="add()">+</button>
+
+                <!-- Sétima linha -->
+                <button class="calc-button number" onclick="appendToDisplay('0')">0</button>
+                <button class="calc-button number" onclick="appendToDisplay('.')">.</button>
+                <button class="calc-button function" onclick="calculateFunction('exp')">EXP</button>
+                <button class="calc-button function" onclick="calculateFunction('abs')">|x|</button>
+                <button class="calc-button function" onclick="calculateFunction('fact')">x!</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let stack = [0, 0, 0, 0];
+        let currentInput = '0';
+        let currentMode = 'deg';
+
+        function updateDisplay() {
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`stack${i}`).textContent = stack[i].toString();
+            }
+        }
+
+        function appendToDisplay(value) {
+            if (currentInput === '0' && value !== '.') {
+                currentInput = value;
+            } else {
+                currentInput += value;
+            }
+            stack[0] = parseFloat(currentInput);
+            updateDisplay();
+        }
+
+        function enter() {
+            stack.unshift(parseFloat(currentInput));
+            stack.pop();
+            currentInput = '0';
+            updateDisplay();
+        }
+
+        function add() {
+            if (currentInput !== '0') enter();
+            const result = stack[1] + stack[0];
+            stack.unshift(result);
+            stack.pop();
+            updateDisplay();
+        }
+
+        function subtract() {
+            if (currentInput !== '0') enter();
+            const result = stack[1] - stack[0];
+            stack.unshift(result);
+            stack.pop();
+            updateDisplay();
+        }
+
+        function multiply() {
+            if (currentInput !== '0') enter();
+            const result = stack[1] * stack[0];
+            stack.unshift(result);
+            stack.pop();
+            updateDisplay();
+        }
+
+        function divide() {
+            if (currentInput !== '0') enter();
+            const result = stack[1] / stack[0];
+            stack.unshift(result);
+            stack.pop();
+            updateDisplay();
+        }
+
+        function clearStack() {
+            stack = [0, 0, 0, 0];
+            currentInput = '0';
+            updateDisplay();
+        }
+
+        function swapStack() {
+            if (currentInput !== '0') enter();
+            [stack[0], stack[1]] = [stack[1], stack[0]];
+            updateDisplay();
+        }
+
+        function rollStack() {
+            if (currentInput !== '0') enter();
+            stack.unshift(stack.pop());
+            updateDisplay();
+        }
+
+        function dropStack() {
+            if (currentInput !== '0') {
+                currentInput = '0';
+            } else {
+                stack.shift();
+                stack.push(0);
+            }
+            updateDisplay();
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function toRadians(angle) {
+            switch (currentMode) {
+                case 'deg':
+                    return angle * Math.PI / 180;
+                case 'grad':
+                    return angle * Math.PI / 200;
+                default:
+                    return angle;
+            }
+        }
+
+        function calculateFunction(func) {
+            if (currentInput !== '0') enter();
+            try {
+                let result;
+                const value = stack[0];
+
+                switch (func) {
+                    case 'sin':
+                        result = Math.sin(toRadians(value));
+                        break;
+                    case 'cos':
+                        result = Math.cos(toRadians(value));
+                        break;
+                    case 'tan':
+                        result = Math.tan(toRadians(value));
+                        break;
+                    case 'asin':
+                        result = Math.asin(value) * (currentMode === 'deg' ? 180 / Math.PI : 1);
+                        break;
+                    case 'acos':
+                        result = Math.acos(value) * (currentMode === 'deg' ? 180 / Math.PI : 1);
+                        break;
+                    case 'atan':
+                        result = Math.atan(value) * (currentMode === 'deg' ? 180 / Math.PI : 1);
+                        break;
+                    case 'log':
+                        result = Math.log10(value);
+                        break;
+                    case 'ln':
+                        result = Math.log(value);
+                        break;
+                    case 'sqrt':
+                        result = Math.sqrt(value);
+                        break;
+                    case 'pi':
+                        result = Math.PI;
+                        break;
+                    case 'e':
+                        result = Math.E;
+                        break;
+                }
+
+                stack[0] = result;
+                updateDisplay();
+            } catch (error) {
+                stack[0] = 'Erro';
+                updateDisplay();
+            }
+        }
+
+        document.addEventListener('keydown', function (event) {
+            const key = event.key;
+            if (/[0-9]/.test(key)) {
+                appendToDisplay(key);
+            } else if (key === '.') {
+                appendToDisplay('.');
+            } else if (key === 'Enter') {
+                enter();
+            } else if (key === '+') {
+                add();
+            } else if (key === '-') {
+                subtract();
+            } else if (key === '*') {
+                multiply();
+            } else if (key === '/') {
+                divide();
+            } else if (key === 'Escape') {
+                clearStack();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var modal = document.getElementById('modalManual');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+            var btnManual = document.getElementById('btnManual');
+            if (btnManual) {
+                btnManual.onclick = function () {
+                    modal.style.display = 'flex';
+                };
+            }
+        });
+    </script>
+</body>
+
+</html>
